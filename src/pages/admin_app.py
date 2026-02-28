@@ -97,15 +97,17 @@ def main() -> None:
             f"Auto mode: searches all {RETRIEVAL_TOP_K_MAX} chunks and keeps those "
             f"above the relevance threshold. Adjust the threshold below."
         )
-        st.slider(
-            "Relevance Threshold",
-            min_value=0.0,
-            max_value=0.5,
-            step=0.05,
-            key="s_threshold",
-            on_change=_save_settings,
-            help="Chunks with a similarity score below this value are excluded.",
-        )
+        with st.expander("⚙️ Developer Only — Do not change unless you know what you are doing", expanded=False):
+            st.warning("Modifying this parameter affects adaptive retrieval recall quality. Proceed with caution.")
+            st.slider(
+                "Relevance Threshold",
+                min_value=0.0,
+                max_value=0.2,
+                step=0.01,
+                key="s_threshold",
+                on_change=_save_settings,
+                help="Chunks with a similarity score below this value are excluded.",
+            )
     else:
         st.slider(
             "Retrieval Top-K",

@@ -14,6 +14,7 @@ from analytics.logger import init_analytics_db, log_chat_interaction
 from config import RELEVANCE_THRESHOLD, RETRIEVAL_TOP_K, RETRIEVAL_TOP_K_MAX
 from generation.chain import generate_chat_response
 from runtime_settings import load_runtime_settings
+import streamlit.components.v1 as components
 
 
 @st.cache_resource
@@ -59,6 +60,46 @@ def main() -> None:
         </style>
         """,
         unsafe_allow_html=True,
+    )
+
+    # Prevent Streamlit's polling heartbeat from auto-scrolling back to the
+    # bottom while the user is reading history. Only allow auto-scroll when
+    # the user is already within 200px of the bottom.
+    components.html(
+        """
+        <script>
+        (function() {
+            const THRESHOLD = 200;
+            const win = window.parent;
+            const _origScrollTo = win.scrollTo.bind(win);
+            const _origScrollIntoView = win.Element.prototype.scrollIntoView;
+
+            win.scrollTo = function(xOrOpts, y) {
+                const targetY = (typeof xOrOpts === 'object' && xOrOpts !== null)
+                    ? xOrOpts.top : y;
+                if (targetY === undefined) { _origScrollTo(xOrOpts, y); return; }
+                const distFromBottom =
+                    win.document.documentElement.scrollHeight
+                    - win.scrollY
+                    - win.innerHeight;
+                if (distFromBottom < THRESHOLD) {
+                    _origScrollTo(xOrOpts, y);
+                }
+            };
+
+            win.Element.prototype.scrollIntoView = function(opts) {
+                const distFromBottom =
+                    win.document.documentElement.scrollHeight
+                    - win.scrollY
+                    - win.innerHeight;
+                if (distFromBottom < THRESHOLD) {
+                    _origScrollIntoView.call(this, opts);
+                }
+            };
+        })();
+        </script>
+        """,
+        height=0,
     )
 
     st.title("💬 User Chat")

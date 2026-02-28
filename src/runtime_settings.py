@@ -24,7 +24,7 @@ def load_runtime_settings() -> dict[str, int | bool]:
         value = max(1, min(RETRIEVAL_TOP_K_MAX, value))
         auto_top_k = bool(data.get("auto_top_k", False))
         threshold = float(data.get("relevance_threshold", RELEVANCE_THRESHOLD))
-        threshold = max(0.0, min(0.5, threshold))
+        threshold = max(0.0, min(0.2, threshold))
         return {"retrieval_top_k": value, "auto_top_k": auto_top_k, "relevance_threshold": threshold}
     except Exception:
         return _default_settings()
@@ -39,7 +39,7 @@ def save_runtime_settings(
     """Persist runtime settings for cross-app usage."""
     ANALYTICS_DIR.mkdir(parents=True, exist_ok=True)
     value = max(1, min(RETRIEVAL_TOP_K_MAX, int(retrieval_top_k)))
-    threshold = max(0.0, min(0.5, float(relevance_threshold)))
+    threshold = max(0.0, min(0.2, float(relevance_threshold)))
     SETTINGS_PATH.write_text(
         json.dumps(
             {"retrieval_top_k": value, "auto_top_k": bool(auto_top_k), "relevance_threshold": threshold},
