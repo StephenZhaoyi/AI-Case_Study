@@ -4,13 +4,13 @@
 
 ## Overview
 
-| Topic | Details |
-|---|---|
-| **Position** | Intern AI Engineer – Customer Journey Analytics & Data Science |
-| **Deliverables** | Part A: GitHub Repository (Code) · Part B: Presentation (max. 20 minutes) |
-| **Language** | English |
-| **Start Date** | Friday, 27.02.2026 |
-| **Deadline** | Tuesday, 03.03.2026, 23:59 — all commits pushed to a **public** GitHub repository |
+| Topic                  | Details                                                                                 |
+| ---------------------- | --------------------------------------------------------------------------------------- |
+| **Position**     | Intern AI Engineer – Customer Journey Analytics & Data Science                         |
+| **Deliverables** | Part A: GitHub Repository (Code) · Part B: Presentation (max. 20 minutes)              |
+| **Language**     | English                                                                                 |
+| **Start Date**   | Friday, 27.02.2026                                                                      |
+| **Deadline**     | Tuesday, 03.03.2026, 23:59 — all commits pushed to a**public** GitHub repository |
 
 ---
 
@@ -48,12 +48,12 @@ Build the core chatbot logic:
 3. **Generation:** The chat model generates an answer based on the context
 
 **Requirements:**
+
 - Number of retrieved chunks should be configurable (Top-K)
 - System prompt should instruct the model to answer based on provided context
 - Sources (document titles) should be referenced in the answer
 
 **Framework:** Use **LangChain / LangGraph** as your framework.
-
 
 ### A3 – Chat Interface
 
@@ -81,17 +81,18 @@ The goal is to show that you understand not just **how** to build this, but **wh
 - **Business perspective:** What problem does an AI chatbot solve? Why is this relevant for an automotive company? What value does it create?
 - **Solution & Architecture:** High-level overview of your RAG architecture. Why RAG (vs. other approaches)? Explain your key technical decisions and trade-offs.
 - **Demo & Results:** Show your prototype in action (screenshots or preferably **live demo**). What works well, what are the limitations?
-- **Roadmap:** Where could this go next? How would you scale this to production? What would change (models, infrastructure, integrations)? What further use cases do you see?
+- **Roadmap:** Where could this go next? How
+- would you scale this to production? What would change (models, infrastructure, integrations)? What further use cases do you see?
 - **Summary & Q&A**
 
 ### Evaluation Criteria
 
-| Criterion | What we look for |
-|---|---|
-| **Reasoning & Decision-Making** | Clear rationale for technical choices (model, chunk size, retrieval strategy, etc.). We want to understand *why*, not just *what*. |
-| **Business Perspective** | Ability to frame the technical solution in business terms — impact on customer experience, operational efficiency, and strategic value. |
-| **Technical Understanding** | Solid grasp of RAG concepts, LLM fundamentals, and the end-to-end pipeline. |
-| **Communication** | Presenting to a mixed audience — making it accessible for business stakeholders while staying precise for engineers. |
+| Criterion                             | What we look for                                                                                                                         |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| **Reasoning & Decision-Making** | Clear rationale for technical choices (model, chunk size, retrieval strategy, etc.). We want to understand*why*, not just *what*.    |
+| **Business Perspective**        | Ability to frame the technical solution in business terms — impact on customer experience, operational efficiency, and strategic value. |
+| **Technical Understanding**     | Solid grasp of RAG concepts, LLM fundamentals, and the end-to-end pipeline.                                                              |
+| **Communication**               | Presenting to a mixed audience — making it accessible for business stakeholders while staying precise for engineers.                    |
 
 ---
 
@@ -110,6 +111,6 @@ The goal is to show that you understand not just **how** to build this, but **wh
 - **Prioritize a working end-to-end pipeline** over perfection in any single component.
 - **Use small models** (1B–4B params). Answer quality is secondary. We evaluate your implementation and understanding.
 - **Explain your decisions** — we want to understand your thought process.
-- A basic **Streamlit app template** is provided in `src/app.py` — you can use it as a starting point or build your own from scratch.
+- Streamlit entrypoints are provided in `src/pages/chat_app.py` and `src/pages/admin_app.py` for separate Chat/Admin web apps.
 
 **Good luck!**
