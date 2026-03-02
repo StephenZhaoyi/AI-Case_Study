@@ -1,30 +1,30 @@
 # Automotive Customer Service AI Chatbot — RAG Prototype
 
-A fully local, **Retrieval-Augmented Generation (RAG)** chatbot prototype for automotive customer service.  
+A fully local, **Retrieval-Augmented Generation (RAG)** chatbot prototype for automotive customer service.
 All inference runs on-device via **Ollama** — no cloud API keys required.
 
 ---
 
 ## Features
 
-| Area | What's implemented |
-|---|---|
-| **RAG Pipeline** | Document ingestion → ChromaDB vector store → semantic retrieval → LLM answer with source citations |
-| **Adaptive Top-K** | Auto mode dynamically filters chunks by similarity score; manual slider for fine control |
-| **Guardrails** | Input sanitization (prompt-injection patterns redacted) + output inspection for system-prompt leakage |
-| **Graceful Fallback** | Returns "I don't know" when no relevant chunks are found, skipping the LLM call entirely |
-| **Chat UI** | Streamlit app with session history, source expander, and sidebar controls |
-| **Admin Dashboard** | Query log viewer (SQLite), LLM-generated trend summary, CSV/Markdown export |
+| Area                        | What's implemented                                                                                    |
+| --------------------------- | ----------------------------------------------------------------------------------------------------- |
+| **RAG Pipeline**      | Document ingestion → ChromaDB vector store → semantic retrieval → LLM answer with source citations |
+| **Adaptive Top-K**    | Auto mode dynamically filters chunks by similarity score; manual slider for fine control              |
+| **Guardrails**        | Input sanitization (prompt-injection patterns redacted) + output inspection for system-prompt leakage |
+| **Graceful Fallback** | Returns "I don't know" when no relevant chunks are found, skipping the LLM call entirely              |
+| **Chat UI**           | Streamlit app with session history, source expander, and sidebar controls                             |
+| **Admin Dashboard**   | Query log viewer (SQLite), LLM-generated trend summary, CSV/Markdown export                           |
 
 ---
 
 ## Prerequisites
 
-| Requirement | Version / Notes |
-|---|---|
-| Python | 3.11+ |
+| Requirement              | Version / Notes                       |
+| ------------------------ | ------------------------------------- |
+| Python                   | 3.11+                                 |
 | [Ollama](https://ollama.ai) | Must be installed and running locally |
-| Git | For cloning the repo |
+| Git                      | For cloning the repo                  |
 
 ---
 
@@ -33,7 +33,7 @@ All inference runs on-device via **Ollama** — no cloud API keys required.
 ### 1. Clone & install dependencies
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/StephenZhaoyi/AI-Case_Study
 cd AI-Case_Study
 pip install -r requirements.txt
 ```
@@ -149,25 +149,25 @@ AI-Case_Study/
 
 All tunable parameters live in [`src/config.py`](../src/config.py):
 
-| Parameter | Default | Description |
-|---|---|---|
-| `OLLAMA_CHAT_MODEL` | `qwen2.5:3b` | Chat model served by Ollama |
-| `OLLAMA_EMBEDDING_MODEL` | `all-minilm` | Embedding model served by Ollama |
-| `CHUNK_SIZE` | `300` | Token chunk size for document splitting |
-| `CHUNK_OVERLAP` | `50` | Overlap between adjacent chunks |
-| `RETRIEVAL_TOP_K` | `4` | Default manual Top-K |
-| `RETRIEVAL_TOP_K_MAX` | `30` | Maximum candidates fetched in Auto mode |
-| `RELEVANCE_THRESHOLD` | `0.1` | Minimum similarity score in Auto mode |
-| `MAX_INPUT_CHARS` | `500` | Hard cap on user input length |
-| `MAX_HISTORY_MESSAGES` | `8` | Number of history turns passed to the model |
+| Parameter                  | Default        | Description                                 |
+| -------------------------- | -------------- | ------------------------------------------- |
+| `OLLAMA_CHAT_MODEL`      | `qwen2.5:3b` | Chat model served by Ollama                 |
+| `OLLAMA_EMBEDDING_MODEL` | `all-minilm` | Embedding model served by Ollama            |
+| `CHUNK_SIZE`             | `300`        | Token chunk size for document splitting     |
+| `CHUNK_OVERLAP`          | `50`         | Overlap between adjacent chunks             |
+| `RETRIEVAL_TOP_K`        | `4`          | Default manual Top-K                        |
+| `RETRIEVAL_TOP_K_MAX`    | `30`         | Maximum candidates fetched in Auto mode     |
+| `RELEVANCE_THRESHOLD`    | `0.1`        | Minimum similarity score in Auto mode       |
+| `MAX_INPUT_CHARS`        | `500`        | Hard cap on user input length               |
+| `MAX_HISTORY_MESSAGES`   | `8`          | Number of history turns passed to the model |
 
 ---
 
 ## Troubleshooting
 
-| Problem | Fix |
-|---|---|
-| `Connection refused` from Ollama | Make sure `ollama serve` is running |
-| `Model not found` error | Run `ollama pull <model-name>` for the model in `config.py` |
-| Empty answers / no chunks retrieved | Re-run the ingestion step; check `data/vectorstore/` exists |
-| Import errors | Run all commands from the **project root** directory |
+| Problem                             | Fix                                                             |
+| ----------------------------------- | --------------------------------------------------------------- |
+| `Connection refused` from Ollama  | Make sure `ollama serve` is running                           |
+| `Model not found` error           | Run `ollama pull <model-name>` for the model in `config.py` |
+| Empty answers / no chunks retrieved | Re-run the ingestion step; check `data/vectorstore/` exists   |
+| Import errors                       | Run all commands from the**project root** directory       |
