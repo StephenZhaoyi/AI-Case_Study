@@ -1,116 +1,173 @@
-# Case Study: AI Engineer Intern – Customer Journey Analytics & Data Science
+# Automotive Customer Service AI Chatbot — RAG Prototype
+
+A fully local, **Retrieval-Augmented Generation (RAG)** chatbot prototype for automotive customer service.  
+All inference runs on-device via **Ollama** — no cloud API keys required.
 
 ---
 
-## Overview
+## Features
 
-| Topic                  | Details                                                                                 |
-| ---------------------- | --------------------------------------------------------------------------------------- |
-| **Position**     | Intern AI Engineer – Customer Journey Analytics & Data Science                         |
-| **Deliverables** | Part A: GitHub Repository (Code) · Part B: Presentation (max. 20 minutes)              |
-| **Language**     | English                                                                                 |
-| **Start Date**   | Friday, 27.02.2026                                                                      |
-| **Deadline**     | Tuesday, 03.03.2026, 23:59 — all commits pushed to a**public** GitHub repository |
-
----
-
-## Context & Scenario
-
-You are joining the **Customer Journey Analytics & Data Science** team at a large automotive company. The team is responsible for data-driven analysis and optimization of digital customer channels – including websites, vehicle configurators, and service portals.
-
-Every day, the company receives hundreds of customer inquiries. Many relate to recurring topics: vehicle features, service schedules, warranty terms, or ordering processes. This information already exists in internal knowledge bases but is not always easy to find.
-
-**Your task:** Build a prototype of a **local AI-powered chatbot** that answers customer questions based on a provided knowledge base. The chatbot should use **Retrieval-Augmented Generation (RAG)** to find relevant documents and generate natural language answers.
-
-> **Important:** The focus is on **technical implementation, architecture, and your decision-making process**, not on answer quality. Since the prototype runs locally, we understand there are CPU/GPU constraints. Lightweight models are perfectly fine. We want to see that you understand the concepts and can explain **why** you chose what you chose.
+| Area | What's implemented |
+|---|---|
+| **RAG Pipeline** | Document ingestion → ChromaDB vector store → semantic retrieval → LLM answer with source citations |
+| **Adaptive Top-K** | Auto mode dynamically filters chunks by similarity score; manual slider for fine control |
+| **Guardrails** | Input sanitization (prompt-injection patterns redacted) + output inspection for system-prompt leakage |
+| **Graceful Fallback** | Returns "I don't know" when no relevant chunks are found, skipping the LLM call entirely |
+| **Chat UI** | Streamlit app with session history, source expander, and sidebar controls |
+| **Admin Dashboard** | Query log viewer (SQLite), LLM-generated trend summary, CSV/Markdown export |
 
 ---
 
-## Part A: Technical Implementation
+## Prerequisites
 
-### A1 – Setup & Knowledge Base
-
-1. **Set up a local LLM** using [Ollama](https://ollama.ai):
-   - A **Chat model** — a lightweight model works
-   - An **Embedding model**
-2. Use the provided documents in `data/knowledge_base/`
-3. Implement a **Document Ingestion Pipeline**:
-   - Load and process documents
-   - Generate embeddings using your chosen Ollama embedding model
-   - Store embeddings in a **Vector Store** — we recommend [ChromaDB](https://docs.trychroma.com/) for simplicity, but you may use alternatives
-
-### A2 – Implement RAG Pipeline
-
-Build the core chatbot logic:
-
-1. **Retrieval:** For a user query, retrieve the most relevant chunks via similarity search
-2. **Augmentation:** Inject the retrieved context into a prompt
-3. **Generation:** The chat model generates an answer based on the context
-
-**Requirements:**
-
-- Number of retrieved chunks should be configurable (Top-K)
-- System prompt should instruct the model to answer based on provided context
-- Sources (document titles) should be referenced in the answer
-
-**Framework:** Use **LangChain / LangGraph** as your framework.
-
-### A3 – Chat Interface
-
-Build a simple chat interface (e.g. using **Streamlit**):
-
-- Input field for queries
-- Display of chatbot response
-- Display of source documents used
-- Chat history within a session
-
-### A4 – Documentation
-
-Make sure to properly document your code.
+| Requirement | Version / Notes |
+|---|---|
+| Python | 3.11+ |
+| [Ollama](https://ollama.ai) | Must be installed and running locally |
+| Git | For cloning the repo |
 
 ---
 
-## Part B: Presentation
+## Setup
 
-Create a **presentation (max. 20 minutes)** for a **mixed audience** — both business stakeholders and technical team members should be able to follow along.
+### 1. Clone & install dependencies
 
-The goal is to show that you understand not just **how** to build this, but **why** it matters and where it could go from here.
+```bash
+git clone <your-repo-url>
+cd AI-Case_Study
+pip install -r requirements.txt
+```
 
-### What we'd like to see:
+### 2. Pull Ollama models
 
-- **Business perspective:** What problem does an AI chatbot solve? Why is this relevant for an automotive company? What value does it create?
-- **Solution & Architecture:** High-level overview of your RAG architecture. Why RAG (vs. other approaches)? Explain your key technical decisions and trade-offs.
-- **Demo & Results:** Show your prototype in action (screenshots or preferably **live demo**). What works well, what are the limitations?
-- **Roadmap:** Where could this go next? How
-- would you scale this to production? What would change (models, infrastructure, integrations)? What further use cases do you see?
-- **Summary & Q&A**
+```bash
+ollama pull qwen2.5:3b      # chat model
+ollama pull all-minilm       # embedding model
+```
 
-### Evaluation Criteria
+> If you want to use different models, update `OLLAMA_CHAT_MODEL` and `OLLAMA_EMBEDDING_MODEL` in `src/config.py`.
 
-| Criterion                             | What we look for                                                                                                                         |
-| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| **Reasoning & Decision-Making** | Clear rationale for technical choices (model, chunk size, retrieval strategy, etc.). We want to understand*why*, not just *what*.    |
-| **Business Perspective**        | Ability to frame the technical solution in business terms — impact on customer experience, operational efficiency, and strategic value. |
-| **Technical Understanding**     | Solid grasp of RAG concepts, LLM fundamentals, and the end-to-end pipeline.                                                              |
-| **Communication**               | Presenting to a mixed audience — making it accessible for business stakeholders while staying precise for engineers.                    |
+### 3. Ingest the knowledge base
+
+Run this **once** to chunk the documents and populate the ChromaDB vector store:
+
+```bash
+python -c "
+from src.ingestion.loader import load_documents
+from src.ingestion.chunker import chunk_documents
+from src.retrieval.vectorstore import init_vectorstore, add_documents_to_vectorstore
+docs = load_documents()
+chunks = chunk_documents(docs)
+vs = init_vectorstore()
+add_documents_to_vectorstore(vs, chunks)
+print(f'Ingested {len(chunks)} chunks.')
+"
+```
+
+The vector store is persisted at `data/vectorstore/` and survives restarts — no need to re-run after the first time.
 
 ---
 
-## How to Submit
+## Running the Apps
 
-1. Click **"Use this template"** → **"Create a new repository"** on this GitHub page
-2. Create your own **public** repository from this template
-3. Work in your own repo — commit and push your code as you go (Make sure to also push the ppt!)
-4. When you're done, share the **link to your repository** with us
-5. **All commits must be pushed before the deadline** — late submissions will not be considered
+### Option A — Makefile (recommended)
+
+```bash
+make chat       # User chat UI    → http://localhost:8501
+make admin      # Admin dashboard → http://localhost:8502
+make run-all    # Start both apps in the background
+make stop       # Stop background apps
+```
+
+`make run-all` stops any existing instances first, then starts both apps in the background.
+
+### Option B — Direct Streamlit commands
+
+```bash
+streamlit run src/pages/chat_app.py  --server.port 8501
+streamlit run src/pages/admin_app.py --server.port 8502
+```
 
 ---
 
-## Tips
+## Usage
 
-- **Prioritize a working end-to-end pipeline** over perfection in any single component.
-- **Use small models** (1B–4B params). Answer quality is secondary. We evaluate your implementation and understanding.
-- **Explain your decisions** — we want to understand your thought process.
-- Streamlit entrypoints are provided in `src/pages/chat_app.py` and `src/pages/admin_app.py` for separate Chat/Admin web apps.
+### Chat App (`localhost:8501`)
 
-**Good luck!**
+- Type a question in the input box and press **Enter**.
+- The answer includes **source document citations** in a collapsible expander.
+- **Sidebar controls:**
+  - **Retrieval Mode** toggle — *Manual* (use the Top-K slider) or *Auto* (adaptive threshold-based filtering).
+  - **Top-K slider** — number of chunks to retrieve (disabled in Auto mode).
+  - **Similarity threshold** — minimum score for a chunk to be included (Auto mode only).
+  - **Clear chat** button — resets the current session history.
+
+### Admin Dashboard (`localhost:8502`)
+
+- **Query Log** — table of all past queries with timestamps, chunk counts, and source documents.
+- **Trend Summary** — click **Generate Summary** to have the LLM analyse the most frequent questions.
+- **Export** — download the FAQ summary as CSV or Markdown.
+
+---
+
+## Project Structure
+
+```
+AI-Case_Study/
+├── Makefile                          # Shortcuts: make chat / admin / run-all / stop
+├── requirements.txt
+├── data/
+│   ├── knowledge_base/               # 6 source documents (.txt)
+│   ├── vectorstore/                  # ChromaDB persistence (auto-created)
+│   └── analytics/
+│       ├── chat_logs.db              # SQLite query log (auto-created)
+│       └── runtime_settings.json    # Persisted sidebar settings
+└── src/
+    ├── config.py                     # Global config (models, paths, thresholds)
+    ├── runtime_settings.py           # Load / save sidebar settings to JSON
+    ├── pages/
+    │   ├── chat_app.py               # User chat interface
+    │   └── admin_app.py             # Admin dashboard
+    ├── ingestion/
+    │   ├── loader.py                 # TextLoader for knowledge_base/
+    │   └── chunker.py               # RecursiveCharacterTextSplitter
+    ├── retrieval/
+    │   ├── vectorstore.py            # ChromaDB init & similarity search
+    │   └── adaptive_topk.py         # Score-threshold chunk filtering
+    ├── generation/
+    │   ├── chain.py                  # RAG chain: retrieve → augment → generate
+    │   ├── prompts.py               # System prompt templates
+    │   └── guardrails.py            # Input sanitization + output inspection
+    └── analytics/
+        ├── logger.py                # Write query entries to SQLite
+        └── summarizer.py           # LLM trend summary generation
+```
+
+---
+
+## Configuration
+
+All tunable parameters live in [`src/config.py`](../src/config.py):
+
+| Parameter | Default | Description |
+|---|---|---|
+| `OLLAMA_CHAT_MODEL` | `qwen2.5:3b` | Chat model served by Ollama |
+| `OLLAMA_EMBEDDING_MODEL` | `all-minilm` | Embedding model served by Ollama |
+| `CHUNK_SIZE` | `300` | Token chunk size for document splitting |
+| `CHUNK_OVERLAP` | `50` | Overlap between adjacent chunks |
+| `RETRIEVAL_TOP_K` | `4` | Default manual Top-K |
+| `RETRIEVAL_TOP_K_MAX` | `30` | Maximum candidates fetched in Auto mode |
+| `RELEVANCE_THRESHOLD` | `0.1` | Minimum similarity score in Auto mode |
+| `MAX_INPUT_CHARS` | `500` | Hard cap on user input length |
+| `MAX_HISTORY_MESSAGES` | `8` | Number of history turns passed to the model |
+
+---
+
+## Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| `Connection refused` from Ollama | Make sure `ollama serve` is running |
+| `Model not found` error | Run `ollama pull <model-name>` for the model in `config.py` |
+| Empty answers / no chunks retrieved | Re-run the ingestion step; check `data/vectorstore/` exists |
+| Import errors | Run all commands from the **project root** directory |

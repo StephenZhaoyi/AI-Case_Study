@@ -56,3 +56,12 @@ def get_top_questions(limit: int = 10) -> list[dict[str, int | str]]:
             (limit,),
         ).fetchall()
     return [{"query": row[0], "ask_count": row[1]} for row in rows]
+
+
+def get_all_queries() -> list[str]:
+    """Return every logged query in chronological order."""
+    with sqlite3.connect(ANALYTICS_DB_PATH) as conn:
+        rows = conn.execute(
+            "SELECT query FROM chat_logs ORDER BY created_at ASC"
+        ).fetchall()
+    return [row[0] for row in rows]

@@ -10,7 +10,8 @@ SRC_DIR = Path(__file__).resolve().parent.parent
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
-from analytics.logger import get_summary_stats, get_top_questions, init_analytics_db
+from analytics.logger import get_all_queries, get_summary_stats, get_top_questions, init_analytics_db
+from analytics.summarizer import summarize_chat_logs
 from config import RELEVANCE_THRESHOLD, RETRIEVAL_TOP_K_MAX
 from runtime_settings import load_runtime_settings, save_runtime_settings
 
@@ -98,7 +99,7 @@ def main() -> None:
             f"above the relevance threshold. Adjust the threshold below."
         )
         with st.expander("⚙️ Developer Only — Do not change unless you know what you are doing", expanded=False):
-            st.warning("Modifying this parameter affects adaptive retrieval recall quality. Proceed with caution.")
+            st.warning("Modifying this parameter affects adaptive retrieval recall quality. Proceed with caution (Best Practices: 0.07-0.12).")
             st.slider(
                 "Relevance Threshold",
                 min_value=0.0,
@@ -124,6 +125,21 @@ def main() -> None:
         st.info("No query logs yet.")
     else:
         st.dataframe(top_questions, use_container_width=True, hide_index=True)
+
+    st.divider()
+    st.subheader("AI Service-Improvement Summary")
+    st.caption(
+        "Click the button below to let the LLM analyse all chat logs and generate a summary of "
+        "automotive concerns. Small talk, off-topic, and security-injection queries are automatically ignored."
+    )
+    if st.button("Generate Summary", type="primary"):
+        with st.spinner("Analysing chat logs… this may take a moment."):
+            all_queries = get_all_queries()
+            summary = summarize_chat_logs(all_queries)
+        st.session_state["admin_summary"] = summary
+
+    if "admin_summary" in st.session_state:
+        st.markdown(st.session_state["admin_summary"])
 
 
 if __name__ == "__main__":
