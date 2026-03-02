@@ -22,6 +22,7 @@ All inference runs on-device via **Ollama** — no cloud API keys required.
 
 | Requirement              | Version / Notes                       |
 | ------------------------ | ------------------------------------- |
+| OS                       | Linux                                 |
 | Python                   | 3.11+                                 |
 | [Ollama](https://ollama.ai) | Must be installed and running locally |
 | Git                      | For cloning the repo                  |
