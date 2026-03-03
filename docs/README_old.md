@@ -21,7 +21,7 @@ You are joining the **Customer Journey Analytics & Data Science** team at a larg
 Every day, the company receives hundreds of customer inquiries. Many relate to recurring topics: vehicle features, service schedules, warranty terms, or ordering processes. This information already exists in internal knowledge bases but is not always easy to find.
 
 **Your task:** Build a prototype of a **local AI-powered chatbot** that answers customer questions based on a provided knowledge base. The chatbot should use **Retrieval-Augmented Generation (RAG)** to find relevant documents and generate natural language answers.
-
+A
 > **Important:** The focus is on **technical implementation, architecture, and your decision-making process**, not on answer quality. Since the prototype runs locally, we understand there are CPU/GPU constraints. Lightweight models are perfectly fine. We want to see that you understand the concepts and can explain **why** you chose what you chose.
 
 ---
